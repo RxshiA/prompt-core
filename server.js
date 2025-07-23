@@ -159,7 +159,19 @@ app.post('/api/process', async (req, res) => {
     // Log result
     console.log(`Processing completed: success=${result.success}`);
 
-    res.json(result);
+    // Only return the output to the frontend
+    if (result.success) {
+      res.json({
+        success: true,
+        output: result.output
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Processing failed',
+        code: 'PROCESSING_ERROR'
+      });
+    }
 
   } catch (error) {
     console.error('Error in /api/process:', error);
