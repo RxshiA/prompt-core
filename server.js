@@ -27,7 +27,7 @@ app.use('/api/', limiter);
 
 // Python script path
 const PYTHON_SCRIPT_PATH = path.join(__dirname, 'script', 'web_text_processor.py');
-const PYTHON_EXECUTABLE = process.env.PYTHON_PATH || 'python3';
+const PYTHON_EXECUTABLE = process.env.PYTHON_PATH || '/app/venv/bin/python';
 console.log(`Using Python executable: ${PYTHON_EXECUTABLE}`);
 console.log(`Python script path: ${PYTHON_SCRIPT_PATH}`);
 

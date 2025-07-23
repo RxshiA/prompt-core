@@ -13,9 +13,10 @@ COPY package*.json ./
 # Install Node.js dependencies
 RUN npm ci --only=production
 
-# Copy Python requirements and install Python dependencies
+# Create Python virtual environment and install Python dependencies
 COPY script/requirements.txt ./script/
-RUN pip3 install -r script/requirements.txt
+RUN python3 -m venv /app/venv
+RUN /app/venv/bin/pip install --no-cache-dir -r script/requirements.txt
 
 # Copy application code
 COPY . .
@@ -26,7 +27,7 @@ RUN adduser -S nextjs -u 1001
 USER nextjs
 
 # Expose port
-EXPOSE 5000
+EXPOSE 5001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
