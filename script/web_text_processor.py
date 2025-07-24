@@ -17,7 +17,7 @@ load_dotenv()
 
 
 class WebTextProcessor:
-    """Text processor optimized for web app integration with Promptlayer"""
+    """Text processor optimized for web app integration"""
 
     def __init__(self):
         """Initialize the TextProcessor with OpenAI client"""
@@ -36,30 +36,9 @@ class WebTextProcessor:
             "classify": self.classify
         }
 
-        # Prompt templates
-        self.prompts = {
-            "summarize": """Please provide a concise summary of the following text. Focus on the main ideas and key information.
-Keep the summary clear and informative, approximately 2-3 sentences.
-
-Text to summarize:
-{text}
-
-Summary:""",
-            "extract_key_points": """Please extract the key points from the following text. Present them as a bulleted list.
-Focus on the most important information and main arguments.
-
-Text to analyze:
-{text}
-
-Key Points:""",
-            "classify": """Please classify the following text into one of these categories: Opinion, Fact, or News.
-Provide the classification and a brief explanation of why it fits that category.
-
-Text to classify:
-{text}
-
-Classification:"""
-        }
+        # Load prompts from configuration file
+        self.prompts = self._load_prompts()
+        self.system_prompt = self.prompts["system"]
 
     def get_prompt_template(self, task: str, text: str) -> str:
         """Get prompt template from local templates"""
@@ -87,7 +66,7 @@ Classification:"""
             response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that provides clear, concise responses."},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=500,
