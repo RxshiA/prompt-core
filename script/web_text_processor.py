@@ -11,35 +11,24 @@ import argparse
 from typing import Dict, Any
 from openai import OpenAI
 from dotenv import load_dotenv
-import promptlayer
 
 # Load environment variables
 load_dotenv()
-
-# Initialize Promptlayer
-promptlayer.api_key = os.getenv('PROMPTLAYER_API_KEY')
-openai_client = promptlayer.openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 
 class WebTextProcessor:
     """Text processor optimized for web app integration with Promptlayer"""
 
     def __init__(self):
-        """Initialize the TextProcessor with OpenAI client and Promptlayer"""
+        """Initialize the TextProcessor with OpenAI client"""
         api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
             raise ValueError(
                 "OPENAI_API_KEY not found in environment variables.")
 
-        # Use Promptlayer if API key is available, otherwise use regular OpenAI
-        self.use_promptlayer = bool(os.getenv('PROMPTLAYER_API_KEY'))
-
-        if self.use_promptlayer:
-            self.client = openai_client
-            print("Using Promptlayer for prompt management")
-        else:
-            self.client = OpenAI(api_key=api_key)
-            print("Using direct OpenAI client")
+        # Use regular OpenAI client
+        self.client = OpenAI(api_key=api_key)
+        print("Using OpenAI client")
 
         self.tasks = {
             "summarize": self.summarize,
@@ -47,8 +36,8 @@ class WebTextProcessor:
             "classify": self.classify
         }
 
-        # Prompt templates (fallback if Promptlayer is not available)
-        self.fallback_prompts = {
+        # Prompt templates
+        self.prompts = {
             "summarize": """Please provide a concise summary of the following text. Focus on the main ideas and key information.
 Keep the summary clear and informative, approximately 2-3 sentences.
 
@@ -73,19 +62,8 @@ Classification:"""
         }
 
     def get_prompt_template(self, task: str, text: str) -> str:
-        """Get prompt template from Promptlayer or fallback to local templates"""
-        if self.use_promptlayer:
-            try:
-                # Try to get prompt from Promptlayer
-                prompt_name = f"text_processor_{task}"
-                template = promptlayer.prompts.get(prompt_name, version=1)
-                return template["prompt_template"].format(text=text)
-            except Exception as e:
-                print(f"Failed to get prompt from Promptlayer: {e}")
-                # Fall back to local prompt
-                return self.fallback_prompts[task].format(text=text)
-        else:
-            return self.fallback_prompts[task].format(text=text)
+        """Get prompt template from local templates"""
+        return self.prompts[task].format(text=text)
 
     def summarize(self, text: str) -> str:
         """Summarize the given text"""
@@ -105,29 +83,16 @@ Classification:"""
     def _call_openai_api(self, prompt: str, prompt_name: str = None) -> str:
         """Make API call to OpenAI and return the response"""
         try:
-            if self.use_promptlayer and prompt_name:
-                # Use Promptlayer with tracking
-                response = self.client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant that provides clear, concise responses."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=500,
-                    temperature=0.7,
-                    pl_tags=[prompt_name, "text_processor"]
-                )
-            else:
-                # Regular OpenAI call
-                response = self.client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant that provides clear, concise responses."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=500,
-                    temperature=0.7
-                )
+            # Make the OpenAI API call
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that provides clear, concise responses."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=500,
+                temperature=0.7
+            )
 
             return response.choices[0].message.content.strip()
 
