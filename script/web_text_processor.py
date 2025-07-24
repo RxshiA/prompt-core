@@ -78,6 +78,30 @@ class WebTextProcessor:
         except Exception as e:
             raise Exception(f"OpenAI API Error: {str(e)}")
 
+    def _load_prompts(self) -> Dict[str, str]:
+        """Load prompts from configuration file (JSON)"""
+        script_dir = os.path.dirname(__file__)
+        json_file = os.path.join(script_dir, 'prompts.json')
+
+        if os.path.exists(json_file):
+            try:
+                with open(json_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    prompts = {}
+                    for key, value in data.items():
+                        if isinstance(value, dict) and 'prompt' in value:
+                            prompts[key] = value['prompt']
+                        elif isinstance(value, str):
+                            prompts[key] = value
+
+                    print(f"Loaded {len(prompts)} prompts from {json_file}")
+                    return prompts
+            except Exception as e:
+                print(f"Failed to load JSON prompts: {e}")
+        else:
+            raise FileNotFoundError(
+                f"Prompts file not found: {json_file}. Please ensure it exists.")
+
     def process_text(self, text: str, task: str) -> Dict[str, Any]:
         """Process text using the selected task"""
         if task not in self.tasks:
