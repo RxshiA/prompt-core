@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 """
-Modified Text Processor for Web App Integration
+Text Processor for Web App Integration
 Accepts command-line arguments and outputs JSON to stdout
 """
 
@@ -26,7 +25,6 @@ class WebTextProcessor:
             raise ValueError(
                 "OPENAI_API_KEY not found in environment variables.")
 
-        # Use regular OpenAI client
         self.client = OpenAI(api_key=api_key)
         print("Using OpenAI client", file=sys.stderr)
 
@@ -47,19 +45,19 @@ class WebTextProcessor:
     def summarize(self, text: str) -> str:
         """Summarize the given text"""
         prompt = self.get_prompt_template("summarize", text)
-        return self._call_openai_api(prompt, "text_processor_summarize")
+        return self._call_openai_api(prompt)
 
     def extract_key_points(self, text: str) -> str:
         """Extract key points from the given text"""
         prompt = self.get_prompt_template("extract_key_points", text)
-        return self._call_openai_api(prompt, "text_processor_extract_key_points")
+        return self._call_openai_api(prompt)
 
     def classify(self, text: str) -> str:
         """Classify the given text as Opinion, Fact, or News"""
         prompt = self.get_prompt_template("classify", text)
-        return self._call_openai_api(prompt, "text_processor_classify")
+        return self._call_openai_api(prompt)
 
-    def _call_openai_api(self, prompt: str, prompt_name: str = None) -> str:
+    def _call_openai_api(self, prompt: str) -> str:
         """Make API call to OpenAI and return the response"""
         try:
             # Make the OpenAI API call
@@ -97,7 +95,7 @@ class WebTextProcessor:
                     print(f"Loaded {len(prompts)} prompts from {json_file}", file=sys.stderr)
                     return prompts
             except Exception as e:
-                print(f"Failed to load JSON prompts: {e}", file=sys.stderr)
+                raise FileNotFoundError(f"Failed to load prompts: {e}")
         else:
             raise FileNotFoundError(
                 f"Prompts file not found: {json_file}. Please ensure it exists.")

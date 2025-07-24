@@ -12,24 +12,22 @@ const PORT = process.env.PORT;
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || true, // Allow all origins in development
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
 
 // Python script path
 const PYTHON_SCRIPT_PATH = path.join(__dirname, 'script', 'web_text_processor.py');
-const PYTHON_EXECUTABLE = process.env.PYTHON_PATH || '/app/venv/bin/python';
-console.log(`Using Python executable: ${PYTHON_EXECUTABLE}`);
-console.log(`Python script path: ${PYTHON_SCRIPT_PATH}`);
+const PYTHON_EXECUTABLE = process.env.PYTHON_PATH;
 
 /**
  * Execute Python script with given parameters
@@ -151,13 +149,8 @@ app.post('/api/process', async (req, res) => {
       });
     }
 
-    console.log(`Processing request: task=${task}, text_length=${text.length}`);
-
     // Execute Python script
     const result = await executePythonScript(text, task);
-
-    // Log result
-    console.log(`Processing completed: success=${result.success}`);
 
     // Only return the output to the frontend
     if (result.success) {
