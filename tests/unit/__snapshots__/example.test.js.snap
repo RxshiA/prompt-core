@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Example Test Patterns Snapshot Testing should match snapshot 1`] = `
+{
+  "items": [
+    "item1",
+    "item2",
+    "item3",
+  ],
+  "message": "Hello World",
+  "timestamp": 2024-01-01T00:00:00.000Z,
+}
+`;

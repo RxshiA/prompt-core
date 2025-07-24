@@ -248,19 +248,147 @@ npm run dev
 # Production start
 npm start
 
-# Run tests
-npm test
+# Testing
+npm test                    # Run all tests
+npm run test:unit          # Run unit tests only
+npm run test:integration   # Run integration tests only
+npm run test:api          # Run API tests only
+npm run test:coverage     # Run tests with coverage report
+npm run test:watch        # Run tests in watch mode
 
-# Lint code
-npm run lint  # (if configured)
+# Test runner script (recommended)
+./run-tests.sh            # Run all tests with setup
+./run-tests.sh unit       # Run specific test suite
+./run-tests.sh coverage   # Generate coverage report
 ```
+
+## 🧪 Testing
+
+### Test Structure
+
+```
+tests/
+├── 📁 unit/              # Unit tests for individual functions
+├── 📁 integration/       # Integration tests for components
+├── 📁 api/              # API endpoint tests
+├── 📁 fixtures/         # Test data and mock responses
+├── 🔧 setup.js          # Test environment configuration
+└── 📊 coverage/         # Generated coverage reports
+```
+
+### Test Categories
+
+#### 🔧 **Unit Tests**
+- Server function validation
+- Input/output validation
+- Error handling logic
+- Configuration management
+- Path construction
+
+#### 🔗 **Integration Tests**
+- Python script execution
+- End-to-end text processing
+- External service integration
+- Performance and load testing
+- Timeout and resource management
+
+#### 🌐 **API Tests**
+- Endpoint functionality
+- Request/response validation
+- Error response formats
+- Security headers and CORS
+- Rate limiting behavior
+
+### Running Tests
+
+#### Quick Test Run
+```bash
+# Install dependencies and run all tests
+npm install
+npm test
+```
+
+#### Comprehensive Testing
+```bash
+# Use the test runner for full setup
+chmod +x run-tests.sh
+./run-tests.sh all
+```
+
+#### Specific Test Suites
+```bash
+# Unit tests only
+npm run test:unit
+
+# Integration tests (requires Python setup)
+npm run test:integration
+
+# API tests
+npm run test:api
+
+# Watch mode for development
+npm run test:watch
+```
+
+#### Coverage Reports
+```bash
+# Generate coverage report
+npm run test:coverage
+
+# View coverage in browser
+open coverage/lcov-report/index.html
+```
+
+### Test Environment Setup
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   pip install -r script/requirements.txt
+   ```
+
+2. **Configure Test Environment**
+   ```bash
+   cp .env.example .env.test
+   # Edit .env.test with test-specific values
+   ```
+
+3. **Set OpenAI API Key** (for integration tests)
+   ```bash
+   echo "OPENAI_API_KEY=your_api_key" >> .env.test
+   ```
+
+### Test Data and Fixtures
+
+Tests include comprehensive fixtures for:
+- ✅ Various text types (news, facts, opinions, technical)
+- ✅ Edge cases (unicode, special characters, large texts)
+- ✅ Error scenarios (invalid inputs, API failures)
+- ✅ Mock responses and expected outputs
+- ✅ Performance benchmarks
+
+### Continuous Integration
+
+Tests are designed to work in CI/CD environments:
+- Environment variable configuration
+- Timeout handling for slow tests
+- Proper cleanup and resource management
+- Detailed error reporting
+
+### Testing Best Practices
+
+- **Isolation**: Each test is independent
+- **Mocking**: External dependencies are mocked appropriately
+- **Coverage**: Comprehensive test coverage for critical paths
+- **Performance**: Load and performance testing included
+- **Documentation**: Well-documented test cases and expected behaviors
 
 ### Testing the API
 
 Using curl:
 ```bash
 # Test summarization
-curl -X POST http://localhost:5000/api/process \
+curl -X POST http://localhost:5001/api/process \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Climate change represents one of the most pressing challenges of our time. Rising global temperatures, caused primarily by increased greenhouse gas emissions from human activities, are leading to melting ice caps, rising sea levels, and more frequent extreme weather events.",
