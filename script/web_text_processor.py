@@ -28,7 +28,7 @@ class WebTextProcessor:
 
         # Use regular OpenAI client
         self.client = OpenAI(api_key=api_key)
-        print("Using OpenAI client")
+        print("Using OpenAI client", file=sys.stderr)
 
         self.tasks = {
             "summarize": self.summarize,
@@ -94,10 +94,10 @@ class WebTextProcessor:
                         elif isinstance(value, str):
                             prompts[key] = value
 
-                    print(f"Loaded {len(prompts)} prompts from {json_file}")
+                    print(f"Loaded {len(prompts)} prompts from {json_file}", file=sys.stderr)
                     return prompts
             except Exception as e:
-                print(f"Failed to load JSON prompts: {e}")
+                print(f"Failed to load JSON prompts: {e}", file=sys.stderr)
         else:
             raise FileNotFoundError(
                 f"Prompts file not found: {json_file}. Please ensure it exists.")
