@@ -22,7 +22,7 @@ RUN /app/venv/bin/pip install --no-cache-dir -r script/requirements.txt
 COPY . .
 
 # Expose port
-EXPOSE 5001
+EXPOSE 5000
 
 # Start the application
 CMD ["npm", "start"]
